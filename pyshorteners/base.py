@@ -93,19 +93,21 @@ class BaseShortener:
             requests.Response: HTTP response.
 
         """
+        timeout = self.timeout
+        if headers and 'referer' in headers and 'hidelinks' in headers['referer']:
+            timeout = 30
         url = self.clean_url(url)
-        response = requests.post(
+        return requests.post(
             url,
             data=data,
             json=json,
             params=params,
             headers=headers,
-            timeout=self.timeout,
+            timeout=self.timeout if timeout == self.timeout else timeout,
             verify=self.verify,
             proxies=self.proxies,
             cert=self.cert,
         )
-        return response
 
     def short(self, url):
         """Shorten URL using a shortening service.
