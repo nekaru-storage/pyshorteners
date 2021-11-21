@@ -9,18 +9,16 @@ URL_RE = re.compile(
     r"))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()"
     r'\[\]{};:\'".,<>?«»“”‘’]))'
 )
-
+headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
 class BaseShortener:
     """Base Class for all shorteners.
-
     Keyword Args:
         proxies (dict, optional): Web proxy configuration for :ref:`Requests
             Proxies <requests:proxies>`.
         timeout (int, optional): Seconds before request is killed.
         verify (bool, str, optional): SSL Certificate verification for
             :ref:`Requests Verification <requests:verification>`.
-
     Example:
         >>> class NewShortener(BaseShortener):
         ...     api_url = 'http://the/link/for/the/api'
@@ -30,7 +28,6 @@ class BaseShortener:
         ...         pass
         ...     def custom_method(self):
         ...         pass
-
     """
 
     def __init__(self, **kwargs):
@@ -43,22 +40,17 @@ class BaseShortener:
         self.proxies = getattr(self, "proxies", {})
         self.cert = getattr(self, "cert", None)
 
-    def _get(self, url, params=None, headers=None):
+    def _get(self, url, params=None, headers=headers):
         """Wrap a GET request with a url check.
-
         Args:
             url (str): URL shortener address.
-
         Keyword Args:
             headers (dict): HTTP headers to add, `Requests Custom Headers`_.
             params (dict): URL parameters, `Requests Parameters`_.
-
         .. _Requests Custom Headers: http://requests.kennethreitz.org/en/master/user/quickstart/#custom-headers
         .. _Requests Parameters: http://requests.kennethreitz.org/en/master/user/quickstart/#passing-parameters-in-urls
-
         Returns:
             requests.Response: HTTP response.
-
         """
         url = self.clean_url(url)
         response = requests.get(
@@ -72,26 +64,21 @@ class BaseShortener:
         )
         return response
 
-    def _post(self, url, data=None, json=None, params=None, headers=None):
+    def _post(self, url, data=None, json=None, params=None, headers=headers):
         """Wrap a POST request with a url check.
-
         Args:
             url (str): URL shortener address.
-
         Keyword Args:
             data (dict, str): Form-encoded data, `Requests POST Data`_.
             headers (dict): HTTP headers to add, `Requests Custom Headers`_.
             json (dict): Python object to JSON encode for data, `Requests
                 POST Data`_.
             params (dict): URL parameters, `Requests Parameters`_.
-
         .. _Requests Custom Headers: http://requests.kennethreitz.org/en/master/user/quickstart/#custom-headers
         .. _Requests Parameters: http://requests.kennethreitz.org/en/master/user/quickstart/#passing-parameters-in-urls
         .. _Requests POST Data: http://requests.kennethreitz.org/en/master/user/quickstart/#more-complicated-post-requests
-
         Returns:
             requests.Response: HTTP response.
-
         """
         timeout = self.timeout
         if headers and 'referer' in headers and 'hidelinks' in headers['referer']:
@@ -111,27 +98,20 @@ class BaseShortener:
 
     def short(self, url):
         """Shorten URL using a shortening service.
-
         Args:
             url (str): URL to shorten.
-
         Raises:
             NotImplementedError: Subclass must override.
-
         """
         raise NotImplementedError
 
     def expand(self, url):
         """Expand URL using a shortening service.
-
         Only visits the link, and returns the response url.
-
         Args:
             url (str): URL to shorten.
-
         Raises:
             ExpandingErrorException: URL failed to expand.
-
         """
         url = self.clean_url(url)
         response = self._get(url)
@@ -141,13 +121,10 @@ class BaseShortener:
 
     def clean_url(self, url, clean_url=True):
         """URL validation.
-
         Args:
             url (str): URL to shorten.
-
         Raises:
             BadURLException: URL is not valid.
-
         """
         if not clean_url:
             return url 
