@@ -1,6 +1,6 @@
 import json
-from pyshorteners.base import BaseShortener
-from pyshorteners.exceptions import BadAPIResponseException
+from ..base import BaseShortener
+from ..exceptions import BadAPIResponseException
 
 
 class Shortener(BaseShortener):

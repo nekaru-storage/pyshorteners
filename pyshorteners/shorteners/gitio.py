@@ -1,5 +1,5 @@
-from pyshorteners.base import BaseShortener
-from pyshorteners.exceptions import ShorteningErrorException
+from ..base import BaseShortener
+from ..exceptions import ShorteningErrorException
 
 
 class Shortener(BaseShortener):
